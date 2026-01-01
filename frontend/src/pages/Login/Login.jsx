@@ -20,7 +20,7 @@ const handleLogin = async () => {
   setLoading(true);
 
   try {
-    const data = await apiRequest("/auth/login", {
+    const data = await apiRequest("/api/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
