@@ -12,10 +12,27 @@ const playerRoutes = require("./routes/player.routes");
 const app = express();
 
 // ==================== MIDDLEWARE ====================
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://sitca-project-production-78e5.up.railway.app"
+];
+
 app.use(cors({
-  origin: "*",
+  origin: function (origin, callback) {
+    // allow requests with no origin (mobile apps, curl, postman)
+    if (!origin) return callback(null, true);
+
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith(".vercel.app")
+    ) {
+      return callback(null, true);
+    }
+
+    callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
 app.options("*", cors());
