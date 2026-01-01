@@ -1,4 +1,6 @@
 // frontend/src/pages/Login/Login.jsx
+import { apiRequest } from "../../api/api";
+
 import React, { useState } from "react";
 import "./Login.css";
 import { FaUser, FaLock } from "react-icons/fa";
@@ -14,40 +16,30 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogin = async () => {
-    setError("");
-    setLoading(true);
+const handleLogin = async () => {
+  setError("");
+  setLoading(true);
 
-    try {
-      const res = await fetch("/api/auth/login", {  // Uses proxy — no hardcoded localhost
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, password })
-      });
+  try {
+    const data = await apiRequest("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.user.role);
 
-      if (!res.ok) {
-        setError(data.message || "Login failed. Please check your credentials.");
-        setLoading(false);
-        return;
-      }
+    const from = location.state?.from?.pathname || "/dashboard";
+    navigate(from, { replace: true });
 
-      // Store token and role
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.user.role);
+  } catch (err) {
+    console.error("Login error:", err);
+    setError(err.message || "Server not reachable");
+  } finally {
+    setLoading(false);
+  }
+};
 
-      // Redirect to intended page or dashboard
-      const from = location.state?.from?.pathname || "/dashboard";
-      navigate(from, { replace: true });
-    } catch (err) {
-      console.error("Login error:", err);
-      setError("Server not reachable. Please try again later.");
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="login-wrapper">
