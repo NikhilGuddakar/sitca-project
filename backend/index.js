@@ -13,9 +13,14 @@ const app = express();
 
 // ==================== MIDDLEWARE ====================
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173", // Allow frontend
+  origin: [
+    "http://localhost:5173",
+    "https://sitca-project-git-main-nikhil-guddakars-projects.vercel.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
+
 
 app.use(express.json({ limit: "10mb" })); // Support larger file uploads (photos)
 
